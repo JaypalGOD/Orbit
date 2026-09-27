@@ -1,0 +1,1505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Orbit — See beyond now</title>
+<meta name="description" content="Everything you need to discover, understand, and explore what is out there.">
+<script>
+  (function () {
+    var d = document.documentElement;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    d.classList.add('intro');
+    setTimeout(function () { d.classList.remove('intro', 'intro-play'); }, 5000);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=block">
+<style>
+  /* assets/fonts/inter-var.woff2 is not present, so Inter is loaded from Google Fonts above.
+     Once the file exists, add:
+     @font-face{ font-family:"InterVar"; font-style:normal; font-weight:100 900; font-display:block; src:url(assets/fonts/inter-var.woff2) format("woff2"); } */
+
+  :root{
+    --u: max( min(calc(100vw / 1563), calc(100vh / 460)), 0.80px );
+    --ink:#ffffff; --ink-mark:rgba(255,255,255,.98); --ink-nav:rgba(255,255,255,.91);
+    --ink-sub:rgba(255,255,255,.50); --ink-pill:rgba(255,255,255,.88); --ink-dark:#000000;
+    --hairline:rgba(255,255,255,.98); --glass-bg:rgba(255,255,255,.12); --glass-line:rgba(255,255,255,.15);
+    --r-btn: calc(10 * var(--u));
+  }
+  @supports (height:100dvh){ :root{ --u: max( min(calc(100vw / 1563), calc(100dvh / 460)), 0.80px ); } }
+  @supports not (width: max(1px,1vw)){ :root{ --u: calc(100vw / 1563); } }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  html{ color-scheme:dark; }
+  body{
+    margin:0;
+    background:#000;
+    color:#fff;
+    overflow-x:hidden;
+    font-family:"InterVar","Inter","Helvetica Neue",Arial,system-ui,sans-serif;
+    font-optical-sizing:none;
+    font-feature-settings:"kern" 1,"calt" 1;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:geometricPrecision;
+  }
+
+  .sr{
+    position:absolute !important;
+    width:1px; height:1px;
+    padding:0; margin:-1px;
+    overflow:hidden;
+    clip:rect(0,0,0,0);
+    white-space:nowrap;
+    border:0;
+  }
+
+  a:focus-visible, button:focus-visible{ outline:2px solid #9b8cff; outline-offset:3px; border-radius:4px; }
+
+  /* ---------- Layers ---------- */
+  /* The hero is the first full screen; the page scrolls on into the shop. */
+  .frame{ position:relative; width:100%; height:100vh; height:100svh; overflow:hidden; background:#000; isolation:isolate; }
+
+  .sky{
+    position:absolute;
+    top:calc(-1.5 * var(--u));
+    left:50%;
+    transform:translateX(-50%);
+    width:100%;
+    height:auto;
+    min-height:calc(100% + 1.5 * var(--u));
+    object-fit:cover;
+    object-position:center top;
+    z-index:0;
+    pointer-events:none;
+    user-select:none;
+  }
+
+  .veil{ position:absolute; inset:0; background:rgba(0,0,0,.06); z-index:1; pointer-events:none; }
+  /* Soft fade at the bottom of the hero so the artwork runs into the shop instead of stopping at a hard edge. */
+  .frame::after{
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:calc(140 * var(--u));
+    background:linear-gradient(to bottom, rgba(11,8,22,0), #0b0816);
+    z-index:1;
+    pointer-events:none;
+  }
+
+  .screen{
+    position:absolute;
+    top:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:calc(1563 * var(--u));
+    height:calc(1006 * var(--u));
+    z-index:2;
+  }
+
+  .hero{
+    position:absolute;
+    left:calc(0.9 * var(--u));
+    right:calc(-0.9 * var(--u));
+    top:0;
+    text-align:center;
+  }
+
+  /* ---------- Header ---------- */
+  .bar{
+    position:absolute;
+    left:calc(50% - 495.5 * var(--u));
+    top:calc(7.5 * var(--u));
+    width:calc(983.5 * var(--u));
+    height:calc(36.2 * var(--u));
+    z-index:3;
+  }
+
+  .brand{
+    position:absolute;
+    left:0;
+    top:50%;
+    transform:translateY(-50%);
+    display:flex;
+    align-items:center;
+    gap:calc(11.4 * var(--u));
+    color:var(--ink-mark);
+    text-decoration:none;
+  }
+  .brand svg{ width:calc(26.9 * var(--u)); height:calc(16.6 * var(--u)); overflow:visible; }
+  .brand span{
+    font-size:calc(17.5 * var(--u));
+    font-weight:550;
+    font-variation-settings:'opsz' 22;
+    letter-spacing:0;
+    line-height:1;
+  }
+
+  /* Centred on the same point the original 5-link row occupied (353.8u + half its width). */
+  .links{
+    position:absolute;
+    left:calc(489.1 * var(--u));
+    top:50%;
+    transform:translate(-50%,-50%);
+    display:flex;
+    gap:calc(25.2 * var(--u));
+  }
+  .links a{
+    font-size:calc(11.9 * var(--u));
+    font-weight:450;
+    font-variation-settings:'opsz' 15;
+    letter-spacing:calc(-0.30 * var(--u));
+    color:var(--ink-nav);
+    text-decoration:none;
+    white-space:nowrap;
+    transition:color .18s ease;
+  }
+  .links a:hover{ color:#fff; }
+
+  .actions{
+    position:absolute;
+    right:0;
+    top:0;
+    display:flex;
+    gap:calc(7.8 * var(--u));
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:var(--r-btn);
+    text-decoration:none;
+    white-space:nowrap;
+    line-height:1;
+    border:0;
+    transition:background-color .18s ease, color .18s ease, border-color .18s ease;
+  }
+  .ghost{
+    background:transparent;
+    color:var(--ink);
+    border:calc(1 * var(--u)) solid var(--hairline);
+  }
+  .ghost:hover{ background:rgba(255,255,255,.10); }
+  .solid{ background:#fff; color:var(--ink-dark); }
+  .solid:hover{ background:#e9e9ea; }
+
+  .bar .btn{
+    height:calc(36.2 * var(--u));
+    line-height:calc(36.2 * var(--u));
+    font-size:calc(11.9 * var(--u));
+    font-weight:500;
+    font-variation-settings:'opsz' 15;
+    letter-spacing:calc(-0.38 * var(--u));
+  }
+  .bar .ghost{ width:calc(85.5 * var(--u)); }
+  .bar .solid{
+    width:calc(88.2 * var(--u));
+    font-size:calc(12.15 * var(--u));
+    font-weight:550;
+    letter-spacing:calc(-0.35 * var(--u));
+  }
+
+  .menu{
+    display:none;
+    align-items:center;
+    justify-content:center;
+    width:calc(36.2 * var(--u));
+    height:calc(36.2 * var(--u));
+    border-radius:var(--r-btn);
+    border:calc(1 * var(--u)) solid rgba(255,255,255,.35);
+    background:transparent;
+    color:#fff;
+    cursor:pointer;
+    padding:0;
+  }
+  .menu svg{ width:55%; height:55%; }
+  .menu:hover{ background:rgba(255,255,255,.10); }
+
+  .cart{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:calc(36.2 * var(--u));
+    height:calc(36.2 * var(--u));
+    border-radius:var(--r-btn);
+    border:calc(1 * var(--u)) solid rgba(255,255,255,.35);
+    background:transparent;
+    color:#fff;
+    cursor:pointer;
+    padding:0;
+    transition:background-color .18s ease;
+  }
+  .cart svg{ width:52%; height:52%; }
+  .cart:hover{ background:rgba(255,255,255,.10); }
+  .cart-n{
+    position:absolute;
+    top:calc(-5 * var(--u));
+    right:calc(-5 * var(--u));
+    min-width:calc(15 * var(--u));
+    height:calc(15 * var(--u));
+    padding:0 calc(4 * var(--u));
+    border-radius:999px;
+    background:#fff;
+    color:var(--ink-dark);
+    font-size:calc(9.5 * var(--u));
+    font-weight:600;
+    font-variation-settings:'opsz' 14;
+    line-height:calc(15 * var(--u));
+    text-align:center;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .sheet{
+    display:none;
+    position:absolute;
+    top:calc(100% + 9 * var(--u));
+    right:0;
+    min-width:calc(210 * var(--u));
+    padding:calc(10 * var(--u));
+    border-radius:calc(14 * var(--u));
+    background:rgba(18,18,20,.88);
+    border:calc(1 * var(--u)) solid var(--glass-line);
+    -webkit-backdrop-filter:blur(calc(18 * var(--u))) saturate(140%);
+    backdrop-filter:blur(calc(18 * var(--u))) saturate(140%);
+    box-shadow:0 calc(18 * var(--u)) calc(44 * var(--u)) rgba(0,0,0,.55);
+  }
+  .bar[data-open="true"] .sheet{ display:block; }
+  .sheet a:not(.btn){
+    display:block;
+    padding:calc(9 * var(--u)) calc(10 * var(--u));
+    border-radius:calc(9 * var(--u));
+    color:var(--ink-nav);
+    font-size:calc(14 * var(--u));
+    font-weight:450;
+    font-variation-settings:'opsz' 15;
+    letter-spacing:calc(-0.30 * var(--u));
+    text-decoration:none;
+  }
+  .sheet a:not(.btn):hover{ background:rgba(255,255,255,.08); color:#fff; }
+  .sheet .solid{
+    display:flex;
+    width:100%;
+    height:calc(38 * var(--u));
+    margin-top:calc(8 * var(--u));
+    font-size:calc(14 * var(--u));
+    font-weight:500;
+    font-variation-settings:'opsz' 15;
+    letter-spacing:calc(-0.30 * var(--u));
+    color:var(--ink-dark);
+  }
+
+  /* ---------- Hero ---------- */
+  .pill{
+    position:absolute;
+    top:calc(129.6 * var(--u));
+    left:50%;
+    transform:translateX(-50%);
+    display:inline-flex;
+    align-items:center;
+    width:calc(194.5 * var(--u));
+    height:calc(22.4 * var(--u));
+    padding-left:calc(4.0 * var(--u));
+    padding-right:calc(8.6 * var(--u));
+    border-radius:999px;
+    background:var(--glass-bg);
+    border:calc(1 * var(--u)) solid var(--glass-line);
+    -webkit-backdrop-filter:blur(calc(10 * var(--u)));
+    backdrop-filter:blur(calc(10 * var(--u)));
+    white-space:nowrap;
+    text-decoration:none;
+    transition:background-color .18s ease;
+  }
+  .pill:hover{ background:rgba(255,255,255,.17); }
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:calc(33.3 * var(--u));
+    height:calc(14 * var(--u));
+    border-radius:999px;
+    background:#fff;
+    color:var(--ink-dark);
+    font-size:calc(10.2 * var(--u));
+    font-weight:600;
+    font-variation-settings:'opsz' 14;
+    padding-top:calc(1.7 * var(--u));
+    letter-spacing:calc(-0.1 * var(--u));
+    line-height:1;
+  }
+  .pill-label{
+    margin-left:calc(3.4 * var(--u));
+    position:relative;
+    top:calc(1 * var(--u));
+    color:var(--ink-pill);
+    font-size:calc(12.4 * var(--u));
+    font-weight:450;
+    font-variation-settings:'opsz' 15;
+    letter-spacing:calc(-0.48 * var(--u));
+    height:calc(22.4 * var(--u));
+    line-height:calc(22.4 * var(--u));
+  }
+  .pill svg{
+    width:calc(9.5 * var(--u));
+    height:calc(8 * var(--u));
+    margin-left:auto;
+    color:rgba(255,255,255,.95);
+  }
+
+  .hero h1{
+    position:absolute;
+    left:calc(0.6 * var(--u));
+    right:calc(-0.6 * var(--u));
+    top:calc(168.5 * var(--u));
+    margin:0;
+    font-size:calc(55 * var(--u));
+    font-weight:545;
+    font-variation-settings:'opsz' 32;
+    line-height:calc(56 * var(--u));
+    letter-spacing:calc(-0.76 * var(--u));
+    color:var(--ink);
+  }
+  .ln{ display:block; overflow:hidden; padding-bottom:calc(7 * var(--u)); margin-bottom:calc(-7 * var(--u)); }
+  .ln-i{ display:block; }
+
+  .hero p{
+    position:absolute;
+    left:50%;
+    transform:translateX(calc(-50% + 0.25 * var(--u)));
+    top:calc(292.6 * var(--u));
+    margin:0;
+    width:calc(700 * var(--u));
+    font-size:calc(15.7 * var(--u));
+    font-weight:400;
+    font-variation-settings:'opsz' 20;
+    line-height:calc(24 * var(--u));
+    letter-spacing:calc(-0.05 * var(--u));
+    color:var(--ink-sub);
+  }
+
+  .cta{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    top:calc(342.8 * var(--u));
+    display:flex;
+    gap:calc(9.9 * var(--u));
+  }
+  .cta .btn{
+    height:calc(36.4 * var(--u));
+    line-height:calc(36.4 * var(--u));
+    padding-top:calc(2 * var(--u));
+    font-size:calc(13.3 * var(--u));
+    font-weight:480;
+    font-variation-settings:'opsz' 16;
+    letter-spacing:calc(-0.34 * var(--u));
+  }
+  .cta .ghost{ width:calc(99.6 * var(--u)); }
+  .cta .solid{ width:calc(96.4 * var(--u)); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:1023px){
+    :root{ --u: calc(100vw / 900); }
+    .bar{ left:4.2vw; width:91.6vw; }
+    .links{ display:none; }
+    .actions > .solid{ display:none; }
+    .menu{ display:inline-flex; }
+  }
+  @media (max-width:640px){
+    :root{ --u: calc(100vw / 486); }
+    .bar{ left:5.2vw; width:89.6vw; }
+    .hero p{ width:min(calc(560 * var(--u)), 88vw); line-height:calc(23 * var(--u)); }
+    .pill{ padding-right:calc(8 * var(--u)); }
+  }
+  @media (max-width:380px){
+    :root{ --u: calc(100vw / 470); }
+  }
+  @media (max-width:1023px) and (max-height:520px){
+    :root{ --u: min(calc(100vw / 900), calc(100vh / 470)); }
+  }
+  @media (min-aspect-ratio:3/1){
+    .sky{ top:auto; bottom:0; height:auto; min-height:0; width:100%; min-width:100%; }
+    .veil{ background:linear-gradient(to bottom, rgba(0,0,0,.82) 0%, rgba(0,0,0,.72) 55%, rgba(0,0,0,.18) 100%); }
+  }
+
+  /* ---------- Entrance animation ---------- */
+  @media (prefers-reduced-motion: no-preference){
+    :root{
+      --e-reveal: cubic-bezier(.18,.85,.26,1);
+      --e-soft:   cubic-bezier(.22,1,.36,1);
+      --e-nav:    cubic-bezier(.33,1,.68,1);
+      --rise:     calc(10 * var(--u));
+      --rise-lg:  calc(13 * var(--u));
+    }
+
+    .intro .brand,
+    .intro .links a,
+    .intro .actions > .btn,
+    .intro .actions > .menu,
+    .intro .actions > .cart,
+    .intro .pill,
+    .intro .hero p,
+    .intro .cta .btn{ opacity:0; }
+    .intro .ln-i{ transform:translate3d(0,115%,0); }
+    .intro .brand,
+    .intro .pill,
+    .intro .hero p,
+    .intro .ln-i,
+    .intro .cta .btn{ will-change:transform,opacity; }
+
+    @keyframes i-rise{
+      from{ opacity:0; transform:translate3d(0,var(--rise),0); }
+      to  { opacity:1; transform:none; }
+    }
+    @keyframes i-rise-cy{
+      from{ opacity:0; transform:translateY(-50%) translate3d(0,var(--rise),0); }
+      to  { opacity:1; transform:translateY(-50%); }
+    }
+    @keyframes i-pill{
+      from{ opacity:0; transform:translateX(-50%) translate3d(0,var(--rise-lg),0) scale(.972); }
+      to  { opacity:1; transform:translateX(-50%); }
+    }
+    @keyframes i-sub{
+      from{ opacity:0; transform:translateX(calc(-50% + 0.25 * var(--u))) translate3d(0,var(--rise-lg),0); }
+      to  { opacity:1; transform:translateX(calc(-50% + 0.25 * var(--u))); }
+    }
+    @keyframes i-btn{
+      from{ opacity:0; transform:translate3d(0,var(--rise-lg),0) scale(.986); }
+      to  { opacity:1; transform:none; }
+    }
+    @keyframes i-line{
+      from{ transform:translate3d(0,115%,0); }
+      to  { transform:none; }
+    }
+
+    .intro-play .brand{ animation:i-rise-cy .62s var(--e-nav) 0s both; }
+    .intro-play .links a{ animation:i-rise .55s var(--e-nav) both; }
+    .intro-play .links a:nth-child(1){ animation-delay:.070s; }
+    .intro-play .links a:nth-child(2){ animation-delay:.115s; }
+    .intro-play .links a:nth-child(3){ animation-delay:.160s; }
+    .intro-play .links a:nth-child(4){ animation-delay:.205s; }
+    .intro-play .links a:nth-child(5){ animation-delay:.250s; }
+    .intro-play .links a:nth-child(6){ animation-delay:.295s; }
+    .intro-play .actions > .btn,
+    .intro-play .actions > .menu,
+    .intro-play .actions > .cart{ animation:i-rise .55s var(--e-nav) .215s both; }
+    .intro-play .actions > .ghost{ animation:i-rise .55s var(--e-nav) .160s both; }
+    .intro-play .pill{ animation:i-pill .62s var(--e-soft) .26s both; }
+    .intro-play .ln:nth-child(1) .ln-i{ animation:i-line .95s var(--e-reveal) .34s both; }
+    .intro-play .ln:nth-child(2) .ln-i{ animation:i-line .95s var(--e-reveal) .48s both; }
+    .intro-play .hero p{ animation:i-sub .70s var(--e-soft) .86s both; }
+    .intro-play .cta .btn:nth-child(1){ animation:i-btn .62s var(--e-soft) 1.00s both; }
+    .intro-play .cta .btn:nth-child(2){ animation:i-btn .62s var(--e-soft) 1.07s both; }
+  }
+
+  /* =========================================================
+     Shop — Orbit Supply
+     Normal responsive sizing (not --u) because this part scrolls.
+     ========================================================= */
+  [hidden]{ display:none !important; }
+  button{ font:inherit; }
+
+  .shop{
+    position:relative;
+    background:
+      radial-gradient(80% 560px at 50% 0%, rgba(92,66,190,.18), transparent 72%),
+      linear-gradient(to bottom, #0b0816 0, #000 720px);
+    font-variation-settings:'opsz' 16;
+  }
+
+  .shop-bar{
+    position:sticky;
+    top:0;
+    z-index:5;
+    background:rgba(0,0,0,.55);
+    -webkit-backdrop-filter:blur(16px) saturate(140%);
+    backdrop-filter:blur(16px) saturate(140%);
+    border-bottom:1px solid rgba(255,255,255,.07);
+  }
+  .shop-bar-in{
+    max-width:1180px;
+    height:60px;
+    margin:0 auto;
+    padding:0 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .mini{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:var(--ink-mark);
+    text-decoration:none;
+    font-size:15px;
+    font-weight:550;
+    font-variation-settings:'opsz' 22;
+    letter-spacing:-.01em;
+  }
+  .mini svg{ width:24px; height:15px; overflow:visible; }
+  .mini em{ font-style:normal; font-weight:450; color:var(--ink-sub); }
+  .bag-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    height:38px;
+    padding:0 8px 0 13px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.06);
+    color:#fff;
+    font-size:13.5px;
+    font-weight:500;
+    letter-spacing:-.01em;
+    cursor:pointer;
+    transition:background-color .18s ease, border-color .18s ease;
+  }
+  .bag-btn:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.3); }
+  .bag-btn svg{ width:17px; height:17px; }
+  .bag-btn .n{
+    min-width:22px;
+    height:22px;
+    padding:0 6px;
+    border-radius:999px;
+    background:#fff;
+    color:#000;
+    font-size:12px;
+    font-weight:600;
+    line-height:22px;
+    text-align:center;
+    font-variant-numeric:tabular-nums;
+  }
+
+  .shop-in{ max-width:1180px; margin:0 auto; padding:clamp(56px,8vw,104px) 24px clamp(64px,8vw,104px); }
+
+  .shop-head{ max-width:640px; margin:0 auto clamp(36px,5vw,60px); text-align:center; }
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    height:26px;
+    padding:0 11px 0 4px;
+    border-radius:999px;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-line);
+    color:var(--ink-pill);
+    font-size:12.5px;
+    font-weight:450;
+    font-variation-settings:'opsz' 15;
+    letter-spacing:-.03em;
+  }
+  .eyebrow b{
+    display:inline-flex;
+    align-items:center;
+    height:18px;
+    padding:1px 8px 0;
+    border-radius:999px;
+    background:#fff;
+    color:#000;
+    font-size:10.5px;
+    font-weight:600;
+    font-variation-settings:'opsz' 14;
+    letter-spacing:-.01em;
+  }
+  .shop-head h2{
+    margin:18px 0 0;
+    font-size:clamp(34px,4.2vw,55px);
+    font-weight:545;
+    font-variation-settings:'opsz' 32;
+    line-height:1.03;
+    letter-spacing:-.014em;
+  }
+  .shop-head p{
+    max-width:520px;
+    margin:14px auto 0;
+    color:var(--ink-sub);
+    font-size:15.7px;
+    font-variation-settings:'opsz' 20;
+    line-height:1.55;
+  }
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(min(310px,100%),1fr)); gap:20px; }
+
+  .card{
+    display:flex;
+    flex-direction:column;
+    border-radius:18px;
+    background:rgba(255,255,255,.035);
+    border:1px solid rgba(255,255,255,.08);
+    overflow:hidden;
+    transition:border-color .25s ease, background-color .25s ease;
+  }
+  .card:hover{ border-color:rgba(255,255,255,.16); background:rgba(255,255,255,.05); }
+
+  .stage{
+    position:relative;
+    aspect-ratio:6/5;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+    background:
+      radial-gradient(58% 58% at 50% 44%, var(--glow), transparent 72%),
+      radial-gradient(120% 100% at 50% 18%, #1a1922, #0a0a0d 70%);
+  }
+  .stage .tee{
+    width:auto;
+    height:86%;
+    filter:drop-shadow(0 16px 28px rgba(0,0,0,.55));
+    transition:transform .6s cubic-bezier(.22,1,.36,1);
+  }
+  .card:hover .stage .tee{ transform:translateY(-4px) scale(1.025); }
+  .tee text{ font-family:inherit; }
+  .badge{
+    position:absolute;
+    top:14px;
+    left:14px;
+    z-index:1;
+    display:inline-flex;
+    align-items:center;
+    height:24px;
+    padding:1px 10px 0;
+    border-radius:999px;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-line);
+    -webkit-backdrop-filter:blur(10px);
+    backdrop-filter:blur(10px);
+    color:var(--ink-pill);
+    font-size:11.5px;
+    font-weight:500;
+    letter-spacing:-.01em;
+  }
+
+  .info{ flex:1; display:flex; flex-direction:column; padding:18px 20px 20px; }
+  .info .head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+  .info h3{ margin:0; font-size:16.5px; font-weight:550; font-variation-settings:'opsz' 18; letter-spacing:-.015em; }
+  .price{ color:var(--ink-pill); font-size:15px; font-weight:500; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .desc{ margin:6px 0 18px; color:var(--ink-sub); font-size:13.5px; line-height:1.5; }
+  .buy{ margin-top:auto; display:flex; flex-direction:column; }
+
+  .opt{ position:relative; min-width:0; margin:0 0 14px; padding:0; border:0; }
+  .opt legend{ padding:0; margin-bottom:9px; color:rgba(255,255,255,.5); font-size:12px; }
+  .opt legend span{ margin-left:4px; color:rgba(255,255,255,.88); }
+  .sws{ display:flex; gap:11px; padding-left:3px; }
+  .sw{
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    background:var(--sw);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.22);
+    outline:1.5px solid transparent;
+    outline-offset:3px;
+    cursor:pointer;
+    transition:outline-color .18s ease;
+  }
+  .sw:hover{ outline-color:rgba(255,255,255,.35); }
+  input:checked + .sw{ outline-color:#fff; }
+  .szs{ display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
+  .sz{
+    display:grid;
+    place-items:center;
+    height:34px;
+    border-radius:9px;
+    border:1px solid rgba(255,255,255,.14);
+    color:rgba(255,255,255,.85);
+    font-size:12.5px;
+    font-weight:500;
+    cursor:pointer;
+    transition:background-color .18s ease, border-color .18s ease, color .18s ease;
+  }
+  .sz:hover{ border-color:rgba(255,255,255,.35); }
+  input:checked + .sz{ background:#fff; border-color:#fff; color:#000; }
+  input:focus-visible + .sw,
+  input:focus-visible + .sz{ outline:2px solid #9b8cff; outline-offset:3px; }
+
+  .add{
+    width:100%;
+    height:42px;
+    margin-top:4px;
+    font-size:14px;
+    font-weight:500;
+    font-variation-settings:'opsz' 15;
+    letter-spacing:-.02em;
+    cursor:pointer;
+  }
+  .add.done, .add.done:hover{ background:#bfe6d4; }
+
+  .perks{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px 28px;
+    margin:40px 0 0;
+    padding:0;
+    list-style:none;
+    color:var(--ink-sub);
+    font-size:13px;
+  }
+  .perks li{ display:flex; align-items:center; gap:8px; }
+  .perks svg{ width:16px; height:16px; color:rgba(255,255,255,.7); }
+
+  .foot{ border-top:1px solid rgba(255,255,255,.07); }
+  .foot-in{
+    max-width:1180px;
+    margin:0 auto;
+    padding:22px 24px;
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    color:rgba(255,255,255,.4);
+    font-size:12.5px;
+  }
+  .foot a{ color:rgba(255,255,255,.6); text-decoration:none; transition:color .18s ease; }
+  .foot a:hover{ color:#fff; }
+
+  /* ---------- Cart drawer ---------- */
+  body.cart-open{ overflow:hidden; }
+  .scrim{
+    position:fixed;
+    inset:0;
+    z-index:20;
+    background:rgba(0,0,0,.55);
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .35s ease, visibility 0s linear .35s;
+  }
+  .drawer{
+    position:fixed;
+    top:0;
+    right:0;
+    bottom:0;
+    z-index:21;
+    width:min(420px,100%);
+    display:flex;
+    flex-direction:column;
+    background:rgba(14,14,17,.94);
+    -webkit-backdrop-filter:blur(22px) saturate(140%);
+    backdrop-filter:blur(22px) saturate(140%);
+    border-left:1px solid rgba(255,255,255,.1);
+    box-shadow:-24px 0 60px rgba(0,0,0,.5);
+    transform:translateX(100%);
+    visibility:hidden;
+    transition:transform .45s cubic-bezier(.22,1,.36,1), visibility 0s linear .45s;
+    font-variation-settings:'opsz' 16;
+  }
+  body.cart-open .scrim{ opacity:1; visibility:visible; transition:opacity .35s ease; }
+  body.cart-open .drawer{ transform:none; visibility:visible; transition:transform .45s cubic-bezier(.22,1,.36,1); }
+
+  .d-head{ display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid rgba(255,255,255,.08); }
+  .d-head h2{ margin:0; font-size:17px; font-weight:550; font-variation-settings:'opsz' 20; letter-spacing:-.015em; }
+  .d-head h2 span{ color:rgba(255,255,255,.45); font-weight:450; }
+  .x{
+    display:grid;
+    place-items:center;
+    width:36px;
+    height:36px;
+    padding:0;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.14);
+    background:transparent;
+    color:#fff;
+    cursor:pointer;
+    transition:background-color .18s ease;
+  }
+  .x:hover{ background:rgba(255,255,255,.08); }
+  .x svg{ width:13px; height:13px; }
+
+  .ship{ padding:14px 20px 16px; border-bottom:1px solid rgba(255,255,255,.08); color:rgba(255,255,255,.7); font-size:13px; }
+  .ship p{ margin:0 0 10px; }
+  .ship b{ color:#fff; font-weight:550; }
+  .track{ height:4px; border-radius:99px; background:rgba(255,255,255,.1); overflow:hidden; }
+  .fill{ display:block; width:0; height:100%; border-radius:inherit; background:#9b8cff; transition:width .45s cubic-bezier(.22,1,.36,1), background-color .3s ease; }
+  .ship.free .fill{ background:#9fe3c6; }
+
+  .lines{ flex:1; margin:0; padding:4px 20px; list-style:none; overflow-y:auto; overscroll-behavior:contain; }
+  .line{ display:grid; grid-template-columns:72px 1fr auto; gap:14px; align-items:start; padding:14px 0; border-bottom:1px solid rgba(255,255,255,.06); }
+  .line:last-child{ border-bottom:0; }
+  .thumb{
+    display:grid;
+    place-items:center;
+    width:72px;
+    height:72px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.06);
+    background:radial-gradient(120% 100% at 50% 20%, #1c1b24, #0b0b0e 70%);
+  }
+  .thumb .mini-tee{ width:78%; height:auto; }
+  .l-name{ margin:2px 0 3px; font-size:14px; font-weight:550; letter-spacing:-.01em; }
+  .l-meta{ margin:0 0 10px; color:rgba(255,255,255,.5); font-size:12.5px; }
+  .qty{ display:inline-flex; align-items:center; height:30px; border:1px solid rgba(255,255,255,.14); border-radius:9px; }
+  .qty button{ width:30px; height:100%; padding:0; border:0; border-radius:8px; background:transparent; color:#fff; font-size:15px; cursor:pointer; }
+  .qty button:hover{ background:rgba(255,255,255,.08); }
+  .qty button:disabled{ opacity:.35; cursor:default; background:transparent; }
+  .qty span{ min-width:24px; text-align:center; font-size:13px; font-variant-numeric:tabular-nums; }
+  .l-right{ display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+  .l-price{ margin-top:2px; font-size:14px; font-weight:500; font-variant-numeric:tabular-nums; }
+  .rm{
+    padding:0;
+    border:0;
+    background:none;
+    color:rgba(255,255,255,.45);
+    font-size:12.5px;
+    text-decoration:underline;
+    text-decoration-color:rgba(255,255,255,.2);
+    text-underline-offset:3px;
+    cursor:pointer;
+  }
+  .rm:hover{ color:#fff; }
+
+  .empty{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:40px 24px; text-align:center; color:rgba(255,255,255,.55); font-size:14px; }
+  .empty p{ margin:0; }
+  .empty svg{ width:54px; height:34px; color:rgba(255,255,255,.35); overflow:visible; }
+  .empty .btn{ height:40px; padding:0 18px; font-size:13.5px; font-weight:500; cursor:pointer; }
+
+  .d-foot{ padding:16px 20px 20px; border-top:1px solid rgba(255,255,255,.08); }
+  .sum{ display:flex; justify-content:space-between; margin-bottom:8px; color:rgba(255,255,255,.6); font-size:13.5px; font-variant-numeric:tabular-nums; }
+  .sum.total{ margin:12px 0 16px; color:#fff; font-size:16px; font-weight:550; }
+  .checkout{ width:100%; height:46px; font-size:14.5px; font-weight:500; letter-spacing:-.02em; cursor:pointer; }
+  .fine{ margin:10px 0 0; text-align:center; color:rgba(255,255,255,.38); font-size:11.5px; }
+
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:24px;
+    z-index:30;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    max-width:calc(100% - 32px);
+    padding:10px 10px 10px 16px;
+    border-radius:12px;
+    background:rgba(22,22,26,.92);
+    border:1px solid rgba(255,255,255,.12);
+    -webkit-backdrop-filter:blur(16px);
+    backdrop-filter:blur(16px);
+    box-shadow:0 18px 44px rgba(0,0,0,.5);
+    color:rgba(255,255,255,.9);
+    font-size:13.5px;
+    opacity:0;
+    visibility:hidden;
+    transform:translate(-50%,16px);
+    transition:opacity .25s ease, transform .35s cubic-bezier(.22,1,.36,1), visibility 0s linear .35s;
+  }
+  .toast.show{ opacity:1; visibility:visible; transform:translate(-50%,0); transition:opacity .25s ease, transform .35s cubic-bezier(.22,1,.36,1); }
+  .toast.solo{ padding:12px 16px; }
+  .toast button{ height:30px; padding:0 12px; border:0; border-radius:8px; background:#fff; color:#000; font-size:12.5px; font-weight:550; white-space:nowrap; cursor:pointer; }
+
+  @media (prefers-reduced-motion: no-preference){
+    html{ scroll-behavior:smooth; }
+    .bump{ animation:bump .42s cubic-bezier(.22,1,.36,1); }
+    @keyframes bump{ 40%{ transform:scale(1.28); } }
+  }
+
+  @media (max-width:640px){
+    .shop-bar-in, .shop-in, .foot-in{ padding-left:16px; padding-right:16px; }
+    .info{ padding:16px 16px 18px; }
+    .foot-in{ flex-direction:column; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; animation:none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <video class="sky" aria-hidden="true" autoplay muted loop playsinline preload="auto"
+      poster="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/0bf7409c-9fa2-4bef-a49d-34903dcc91ad.png"
+      src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/4b73c700-3112-4c07-bd48-0af2893dff7c.mp4"></video>
+
+    <div class="veil"></div>
+
+    <header class="bar">
+      <a class="brand" href="#" aria-label="Orbit — home">
+        <svg viewBox="0 0 26.9 16.6" fill="none" aria-hidden="true">
+          <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="currentColor" stroke-width="1.25"/>
+          <circle cx="13.25" cy="8.4" r="8.8" fill="#000"/>
+          <circle cx="13.25" cy="8.4" r="8.1" fill="currentColor"/>
+          <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="#000" stroke-width="0.9" stroke-dasharray="28.2 28.2"/>
+          <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="currentColor" stroke-width="1.25" stroke-dasharray="28.2 28.2"/>
+        </svg>
+        <span>Orbit</span>
+      </a>
+
+      <nav class="links" aria-label="Primary">
+        <a href="#shop">Shop</a>
+        <a href="#about">About</a>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#contact">Contact</a>
+        <a href="#blog">Blog</a>
+      </nav>
+
+      <div class="actions">
+        <a class="btn ghost" href="#try">Try for free</a>
+        <a class="btn solid" href="#demo">Get a demo</a>
+        <button class="cart" type="button" data-open-cart aria-label="Cart, empty">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M4.6 6.6h10.8l-.9 10a1.6 1.6 0 0 1-1.6 1.4H7.1a1.6 1.6 0 0 1-1.6-1.4l-.9-10Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M7.3 8.6V5.7a2.7 2.7 0 0 1 5.4 0v2.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span class="cart-n" data-cart-count hidden>0</span>
+        </button>
+        <button class="menu" id="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="menu-sheet">
+          <svg viewBox="0 0 20 14" fill="none" aria-hidden="true">
+            <path d="M0 1h20M0 7h20M0 13h20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <nav class="sheet" id="menu-sheet" aria-label="Menu">
+          <a href="#shop">Shop</a>
+          <a href="#about">About</a>
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#contact">Contact</a>
+          <a href="#blog">Blog</a>
+          <a class="btn solid" href="#demo">Get a demo</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="screen">
+      <main class="hero">
+        <a class="pill" href="#shop">
+          <span class="chip">New</span>
+          <span class="pill-label">Go beyond the ordinary</span>
+          <svg viewBox="0 0 9.5 8" fill="none" aria-hidden="true">
+            <path d="M0.7 4H8.8M5.6 0.75 8.85 4 5.6 7.25" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+
+        <h1>
+          <span class="ln"><span class="ln-i">See beyond now</span></span>
+          <span class="ln"><span class="ln-i">Explore the stars</span></span>
+        </h1>
+
+        <p>Everything you need to discover, understand, and explore what is out there.</p>
+
+        <div class="cta">
+          <a class="btn ghost" href="#try">Try for free</a>
+          <a class="btn solid" href="#shop">Explore</a>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ===================== Shop ===================== -->
+  <section class="shop" id="shop" aria-labelledby="shop-title">
+    <div class="shop-bar">
+      <div class="shop-bar-in">
+        <a class="mini" href="#" aria-label="Orbit Supply — back to top">
+          <svg viewBox="0 0 26.9 16.6" fill="none" aria-hidden="true">
+            <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="currentColor" stroke-width="1.25"/>
+            <circle cx="13.25" cy="8.4" r="8.8" fill="#000"/>
+            <circle cx="13.25" cy="8.4" r="8.1" fill="currentColor"/>
+            <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="#000" stroke-width="0.9" stroke-dasharray="28.2 28.2"/>
+            <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="currentColor" stroke-width="1.25" stroke-dasharray="28.2 28.2"/>
+          </svg>
+          <span>Orbit <em>Supply</em></span>
+        </a>
+        <button class="bag-btn" type="button" data-open-cart aria-label="Cart, empty">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M4.6 6.6h10.8l-.9 10a1.6 1.6 0 0 1-1.6 1.4H7.1a1.6 1.6 0 0 1-1.6-1.4l-.9-10Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M7.3 8.6V5.7a2.7 2.7 0 0 1 5.4 0v2.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Cart
+          <span class="n" data-cart-count>0</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="shop-in">
+      <header class="shop-head">
+        <span class="eyebrow"><b>Store</b>Orbit Supply</span>
+        <h2 id="shop-title">Wear the stars</h2>
+        <p>Heavyweight organic cotton tees, printed to order with the Orbit artwork.</p>
+      </header>
+
+      <div class="grid" id="grid"></div>
+
+      <ul class="perks">
+        <li>
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 6.8 10 3.3l7 3.5v6.4L10 16.7l-7-3.5V6.8Z M3 6.8l7 3.5 7-3.5 M10 10.3v6.4" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          Free shipping over <span data-free-ship></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.5 10a5.5 5.5 0 1 0 1.7-4M4.5 3.8V7.5h3.7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          30-day returns
+        </li>
+        <li>
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2.8l1.7 4.6 4.6 1.7-4.6 1.7L10 15.4l-1.7-4.6-4.6-1.7 4.6-1.7L10 2.8Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          Printed to order in 3–5 days
+        </li>
+      </ul>
+    </div>
+
+    <footer class="foot">
+      <div class="foot-in">
+        <span>© 2026 Orbit. All rights reserved.</span>
+        <a href="#">Back to top ↑</a>
+      </div>
+    </footer>
+  </section>
+
+  <!-- Cart drawer -->
+  <div class="scrim" data-close-cart></div>
+  <aside class="drawer" id="cart" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+    <div class="d-head">
+      <h2 id="cart-title">Your cart <span data-cart-title-count></span></h2>
+      <button class="x" type="button" data-close-cart aria-label="Close cart">
+        <svg viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M1.5 1.5l11 11M12.5 1.5l-11 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="ship" id="ship">
+      <p id="ship-msg"></p>
+      <div class="track"><span class="fill" id="ship-fill"></span></div>
+    </div>
+    <ul class="lines" id="lines"></ul>
+    <div class="empty" id="empty">
+      <svg viewBox="0 0 26.9 16.6" fill="none" aria-hidden="true">
+        <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="currentColor" stroke-width="1"/>
+        <circle cx="13.25" cy="8.4" r="8.8" fill="#0e0e11"/>
+        <circle cx="13.25" cy="8.4" r="8.1" stroke="currentColor" stroke-width="1"/>
+        <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="currentColor" stroke-width="1" stroke-dasharray="28.2 28.2"/>
+      </svg>
+      <p>Your cart is empty.</p>
+      <a class="btn ghost" href="#shop" data-close-cart>Browse tees</a>
+    </div>
+    <div class="d-foot" id="d-foot">
+      <div class="sum"><span>Subtotal</span><span id="subtotal"></span></div>
+      <div class="sum"><span>Shipping</span><span id="shipping"></span></div>
+      <div class="sum total"><span>Total</span><span id="total"></span></div>
+      <button class="btn solid checkout" type="button" id="checkout">Checkout</button>
+      <p class="fine">Taxes included. Demo store — no payment is taken.</p>
+    </div>
+  </aside>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Shared SVG defs for the t-shirt mockups (400×440 user space) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <clipPath id="tee-clip"><path d="M146 34C168 26 232 26 254 34L322 58C346 66 362 80 374 100L398 150L348 178L324 148V414Q324 426 312 426H88Q76 426 76 414V148L52 178L2 150L26 100C38 80 54 66 78 58Z"/></clipPath>
+      <clipPath id="pr-sky"><rect x="128" y="104" width="144" height="115" rx="2"/></clipPath>
+      <clipPath id="pr-planet"><circle cx="200" cy="170" r="66"/></clipPath>
+      <clipPath id="pr-drift"><rect x="136" y="102" width="128" height="149" rx="14"/></clipPath>
+      <clipPath id="pr-flare"><path d="M122 214V184A78 78 0 0 1 278 184V214Z"/></clipPath>
+      <clipPath id="pr-words"><circle cx="200" cy="170" r="44"/></clipPath>
+      <linearGradient id="tee-side" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#000" stop-opacity=".32"/>
+        <stop offset=".2" stop-color="#000" stop-opacity=".06"/>
+        <stop offset=".5" stop-color="#000" stop-opacity="0"/>
+        <stop offset=".8" stop-color="#000" stop-opacity=".06"/>
+        <stop offset="1" stop-color="#000" stop-opacity=".32"/>
+      </linearGradient>
+      <linearGradient id="tee-top" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity=".08"/>
+        <stop offset=".3" stop-color="#fff" stop-opacity="0"/>
+        <stop offset=".75" stop-color="#000" stop-opacity="0"/>
+        <stop offset="1" stop-color="#000" stop-opacity=".22"/>
+      </linearGradient>
+      <radialGradient id="tee-lit" cx=".5" cy=".4" r=".5">
+        <stop offset="0" stop-color="#fff" stop-opacity=".06"/>
+        <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+  </svg>
+
+  <!-- Entrance animation -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      if (!d.classList.contains('intro')) return;
+
+      var started = false, finished = false;
+
+      function finish() {
+        if (finished) return;
+        finished = true;
+        d.classList.remove('intro', 'intro-play');
+      }
+
+      function start() {
+        if (started) return;
+        started = true;
+        d.classList.add('intro-play');
+        var last = document.querySelector('.cta .btn:last-child');
+        if (last) {
+          last.addEventListener('animationend', function (e) {
+            if (e.target === last) finish();
+          });
+        }
+        setTimeout(finish, 3000);
+      }
+
+      function go() {
+        requestAnimationFrame(function () { requestAnimationFrame(start); });
+      }
+
+      setTimeout(go, 700);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(go);
+    })();
+  </script>
+
+  <!-- Mobile menu -->
+  <script>
+    (function () {
+      var bar = document.querySelector('.bar');
+      var btn = document.getElementById('menu-btn');
+      if (!bar || !btn) return;
+
+      function set(open) {
+        bar.dataset.open = open ? 'true' : 'false';
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.setAttribute('aria-label', open ? 'Close menu' : 'Menu');
+      }
+      set(false);
+
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        set(bar.dataset.open !== 'true');
+      });
+      document.addEventListener('click', function (e) {
+        if (!bar.contains(e.target)) set(false);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') set(false);
+      });
+      // Links now scroll within the page, so close the sheet after one is chosen.
+      document.getElementById('menu-sheet').addEventListener('click', function (e) {
+        if (e.target.closest('a')) set(false);
+      });
+      document.addEventListener('cart:open', function () { set(false); });
+    })();
+  </script>
+
+  <!-- Background video playback -->
+  <script>
+    (function () {
+      var v = document.querySelector('video.sky');
+      if (!v) return;
+      v.muted = true;
+
+      function play() {
+        if (v.paused) {
+          var p = v.play();
+          if (p && p.catch) p.catch(function () {});
+        }
+      }
+
+      play();
+      v.addEventListener('canplay', play);
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') play();
+      });
+
+      var kicks = ['pointerdown', 'touchstart', 'scroll'];
+      function kick() {
+        kicks.forEach(function (n) { window.removeEventListener(n, kick, { passive: true }); });
+        play();
+      }
+      kicks.forEach(function (n) { window.addEventListener(n, kick, { passive: true }); });
+    })();
+  </script>
+
+  <!-- Shop + cart -->
+  <script>
+    (() => {
+      /* ---------- Catalogue ---------- */
+      const ART = 'https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/0bf7409c-9fa2-4bef-a49d-34903dcc91ad.png';
+      const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+      const FREE_SHIP = 2499, SHIP_FEE = 99, MAX_QTY = 10, KEY = 'orbit-cart-v1';
+      const money = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+      const fmt = (n) => money.format(n);
+
+      const COLOURS = {
+        black:    { name: 'Black',    hex: '#131316', light: false },
+        charcoal: { name: 'Charcoal', hex: '#3a3a41', light: false },
+        midnight: { name: 'Midnight', hex: '#1b2246', light: false },
+        violet:   { name: 'Violet',   hex: '#3b2b63', light: false },
+        mint:     { name: 'Mint',     hex: '#bfe6d4', light: true  },
+        bone:     { name: 'Bone',     hex: '#e9e5db', light: true  }
+      };
+
+      const PRODUCTS = [
+        { id: 'sky',    name: 'Orbit Sky Tee',       price: 1499, badge: 'Bestseller', print: 'sky',
+          colours: ['black', 'midnight', 'bone'],             glow: 'rgba(126,98,230,.30)',
+          desc: 'The full Orbit sky: ringed planet, mint flares and violet cloudbanks, printed edge to edge.' },
+        { id: 'planet', name: 'Ringed Planet Tee',   price: 1299, badge: 'New',        print: 'planet',
+          colours: ['black', 'charcoal', 'bone'],             glow: 'rgba(160,170,215,.20)',
+          desc: 'A circular cut of the planet and its rings, centred on the chest.' },
+        { id: 'drift',  name: 'Violet Drift Tee',    price: 1299, badge: '',           print: 'drift',
+          colours: ['violet', 'black', 'midnight'],           glow: 'rgba(120,86,235,.34)',
+          desc: 'The right-hand cloudbank, with a satellite drifting through it.' },
+        { id: 'flare',  name: 'Mint Flare Tee',      price: 1399, badge: 'Limited',    print: 'flare',
+          colours: ['black', 'mint', 'charcoal'],             glow: 'rgba(140,230,190,.22)',
+          desc: 'Mint-green flares rising over the planet, framed in an arch.' },
+        { id: 'mark',   name: 'Orbit Mark Tee',      price: 999,  badge: '',           print: 'mark',
+          colours: ['black', 'bone', 'charcoal', 'midnight'], glow: 'rgba(255,255,255,.08)',
+          desc: 'Just the mark. A small left-chest print for every day.' },
+        { id: 'words',  name: 'See Beyond Now Tee',  price: 1499, badge: '',           print: 'words',
+          colours: ['black', 'bone'],                         glow: 'rgba(155,140,255,.22)',
+          desc: 'The headline, set around a small planet print.' }
+      ];
+      const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p]));
+
+      /* ---------- T-shirt mockup (SVG, 400×440) ---------- */
+      const TEE = 'M146 34C168 26 232 26 254 34L322 58C346 66 362 80 374 100L398 150L348 178L324 148V414Q324 426 312 426H88Q76 426 76 414V148L52 178L2 150L26 100C38 80 54 66 78 58Z';
+
+      // Crop of the artwork (vb is in the image's own 1536×1024 pixels) placed into a print box.
+      const art = (x, y, w, h, vb) =>
+        `<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${vb}" preserveAspectRatio="xMidYMid slice"><image href="${ART}" width="1536" height="1024"/></svg>`;
+
+      const logo = (ink, bg) => `
+        <g fill="none" color="${ink}">
+          <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="currentColor" stroke-width="1.25"/>
+          <circle cx="13.25" cy="8.4" r="8.8" fill="${bg}"/>
+          <circle cx="13.25" cy="8.4" r="8.1" fill="currentColor"/>
+          <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="${bg}" stroke-width="0.9" stroke-dasharray="28.2 28.2"/>
+          <ellipse cx="13.25" cy="8.4" rx="13.2" ry="2.9" transform="rotate(-25 13.25 8.4)" stroke="currentColor" stroke-width="1.25" stroke-dasharray="28.2 28.2"/>
+        </g>`;
+
+      const PRINTS = {
+        sky:    () => `<g clip-path="url(#pr-sky)">${art(128, 104, 144, 115, '300 304 900 720')}</g>`,
+        planet: () => `<g clip-path="url(#pr-planet)">${art(134, 104, 132, 132, '492 468 520 520')}</g>`,
+        drift:  () => `<g clip-path="url(#pr-drift)">${art(136, 102, 128, 149, '1020 420 516 600')}</g>`,
+        flare:  () => `<g clip-path="url(#pr-flare)">${art(122, 106, 156, 108, '340 350 720 498')}</g>`,
+        mark:   (c) => {
+          const ink = c.light ? '#141416' : '#ffffff';
+          return `<g transform="translate(226 108) scale(.62)">${logo(ink, c.hex)}
+            <text x="38.3" y="14.2" fill="${ink}" font-size="17.5" font-weight="550" style="font-variation-settings:'opsz' 22">Orbit</text></g>`;
+        },
+        words:  (c) => {
+          const ink = c.light ? '#141416' : '#ffffff';
+          return `<text x="201.6" y="112" text-anchor="middle" fill="${ink}" font-size="11" font-weight="600" letter-spacing="3.2">SEE BEYOND NOW</text>
+            <g clip-path="url(#pr-words)">${art(156, 126, 88, 88, '552 528 400 400')}</g>
+            <text x="201.3" y="236" text-anchor="middle" fill="${ink}" fill-opacity=".72" font-size="7.5" font-weight="500" letter-spacing="2.6">EXPLORE THE STARS</text>`;
+        }
+      };
+
+      function tee(p, colourKey, cls) {
+        const c = COLOURS[colourKey];
+        const edge = c.light ? 'rgba(0,0,0,.16)' : 'rgba(255,255,255,.10)';
+        const stitch = c.light ? 'rgba(0,0,0,.2)' : 'rgba(255,255,255,.13)';
+        return `<svg class="${cls}" viewBox="0 0 400 440" aria-hidden="true" focusable="false">
+          <g clip-path="url(#tee-clip)">
+            <rect width="400" height="440" fill="${c.hex}"/>
+            <path d="M146 34C168 26 232 26 254 34C240 56 160 56 146 34Z" fill="#000" fill-opacity="${c.light ? '.2' : '.5'}"/>
+            <path d="M146 34C160 56 240 56 254 34" fill="none" stroke="${c.hex}" stroke-width="6"/>
+            ${PRINTS[p.print](c)}
+            <rect width="400" height="440" fill="url(#tee-lit)"/>
+            <rect width="400" height="440" fill="url(#tee-side)"/>
+            <rect width="400" height="440" fill="url(#tee-top)"/>
+          </g>
+          <path d="${TEE}" fill="none" stroke="${edge}"/>
+          <g fill="none" stroke="${stitch}">
+            <path d="M143 40C158 64 242 64 257 40"/>
+            <path d="M94 52C88 90 82 122 76 148M306 52C312 90 318 122 324 148"/>
+            <path d="M80 418H320M5 143L55 171M395 143L345 171" stroke-dasharray="3 3"/>
+          </g>
+        </svg>`;
+      }
+
+      /* ---------- Product grid ---------- */
+      const card = (p) => {
+        const first = p.colours[0];
+        const swatches = p.colours.map((k, i) => `
+          <input class="sr" type="radio" name="colour-${p.id}" id="c-${p.id}-${k}" value="${k}"${i === 0 ? ' checked' : ''}>
+          <label class="sw" for="c-${p.id}-${k}" style="--sw:${COLOURS[k].hex}" title="${COLOURS[k].name}"><span class="sr">${COLOURS[k].name}</span></label>`).join('');
+        const sizes = SIZES.map((s) => `
+          <input class="sr" type="radio" name="size-${p.id}" id="s-${p.id}-${s}" value="${s}"${s === 'M' ? ' checked' : ''}>
+          <label class="sz" for="s-${p.id}-${s}">${s}</label>`).join('');
+        return `
+          <article class="card" data-id="${p.id}" style="--glow:${p.glow}">
+            <div class="stage">
+              ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
+              ${tee(p, first, 'tee')}
+            </div>
+            <div class="info">
+              <div class="head"><h3>${p.name}</h3><span class="price">${fmt(p.price)}</span></div>
+              <p class="desc">${p.desc}</p>
+              <div class="buy">
+                <fieldset class="opt"><legend>Colour <span class="cname">${COLOURS[first].name}</span></legend><div class="sws">${swatches}</div></fieldset>
+                <fieldset class="opt"><legend>Size</legend><div class="szs">${sizes}</div></fieldset>
+                <button class="btn solid add" type="button">Add to cart</button>
+              </div>
+            </div>
+          </article>`;
+      };
+
+      const grid = document.getElementById('grid');
+      grid.innerHTML = PRODUCTS.map(card).join('');
+      document.querySelectorAll('[data-free-ship]').forEach((el) => { el.textContent = fmt(FREE_SHIP); });
+
+      grid.addEventListener('change', (e) => {
+        const t = e.target;
+        if (!t.name || !t.name.startsWith('colour-')) return;
+        const c = t.closest('.card');
+        c.querySelector('.stage .tee').outerHTML = tee(byId[c.dataset.id], t.value, 'tee');
+        c.querySelector('.cname').textContent = COLOURS[t.value].name;
+      });
+
+      grid.addEventListener('click', (e) => {
+        const b = e.target.closest('.add');
+        if (!b) return;
+        const c = b.closest('.card'), id = c.dataset.id;
+        const colour = c.querySelector(`input[name="colour-${id}"]:checked`).value;
+        const size = c.querySelector(`input[name="size-${id}"]:checked`).value;
+        add(id, colour, size);
+        b.textContent = 'Added'; b.classList.add('done');
+        clearTimeout(b._t);
+        b._t = setTimeout(() => { b.textContent = 'Add to cart'; b.classList.remove('done'); }, 1400);
+        toast(`${byId[id].name} · ${COLOURS[colour].name} · ${size} added`, 'View cart');
+      });
+
+      /* ---------- Cart state (kept in this browser only) ---------- */
+      let cart = load();
+
+      function load() {
+        try {
+          const raw = JSON.parse(localStorage.getItem(KEY)) || [];
+          return raw
+            .filter((l) => byId[l.id] && COLOURS[l.colour] && SIZES.includes(l.size) && l.qty > 0)
+            .map((l) => ({ id: l.id, colour: l.colour, size: l.size, qty: Math.min(MAX_QTY, Math.floor(l.qty)) }));
+        } catch (e) { return []; }
+      }
+      function save() { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} }
+
+      function add(id, colour, size) {
+        const line = cart.find((l) => l.id === id && l.colour === colour && l.size === size);
+        if (line) line.qty = Math.min(MAX_QTY, line.qty + 1);
+        else cart.push({ id, colour, size, qty: 1 });
+        save(); render(true);
+      }
+
+      /* ---------- Rendering ---------- */
+      const $ = (id) => document.getElementById(id);
+      const drawer = $('cart'), linesEl = $('lines'), emptyEl = $('empty'), footEl = $('d-foot'), shipEl = $('ship');
+      const closeBtn = drawer.querySelector('.x');
+
+      const lineHTML = (l, i) => {
+        const p = byId[l.id];
+        return `
+          <li class="line" data-i="${i}">
+            <div class="thumb">${tee(p, l.colour, 'mini-tee')}</div>
+            <div>
+              <p class="l-name">${p.name}</p>
+              <p class="l-meta">${COLOURS[l.colour].name} · ${l.size}</p>
+              <div class="qty">
+                <button type="button" data-act="dec" aria-label="Decrease quantity"${l.qty <= 1 ? ' disabled' : ''}>−</button>
+                <span aria-label="Quantity">${l.qty}</span>
+                <button type="button" data-act="inc" aria-label="Increase quantity"${l.qty >= MAX_QTY ? ' disabled' : ''}>+</button>
+              </div>
+            </div>
+            <div class="l-right">
+              <span class="l-price">${fmt(p.price * l.qty)}</span>
+              <button class="rm" type="button" data-act="rm">Remove</button>
+            </div>
+          </li>`;
+      };
+
+      function render(bump) {
+        const count = cart.reduce((n, l) => n + l.qty, 0);
+        const subtotal = cart.reduce((n, l) => n + l.qty * byId[l.id].price, 0);
+        const free = subtotal >= FREE_SHIP;
+        const shipping = count && !free ? SHIP_FEE : 0;
+        const label = count ? `Cart, ${count} item${count > 1 ? 's' : ''}` : 'Cart, empty';
+
+        document.querySelectorAll('[data-cart-count]').forEach((el) => {
+          el.textContent = count;
+          if (el.classList.contains('cart-n')) el.hidden = count === 0;
+          if (bump) { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
+        });
+        document.querySelectorAll('[data-open-cart]').forEach((el) => el.setAttribute('aria-label', label));
+        document.querySelector('[data-cart-title-count]').textContent = count ? `(${count})` : '';
+
+        linesEl.innerHTML = cart.map(lineHTML).join('');
+        linesEl.hidden = footEl.hidden = shipEl.hidden = count === 0;
+        emptyEl.hidden = count > 0;
+
+        shipEl.classList.toggle('free', free);
+        $('ship-msg').innerHTML = free
+          ? 'You’ve unlocked <b>free shipping</b>.'
+          : `You’re <b>${fmt(FREE_SHIP - subtotal)}</b> away from free shipping.`;
+        $('ship-fill').style.width = Math.min(100, (subtotal / FREE_SHIP) * 100) + '%';
+        $('subtotal').textContent = fmt(subtotal);
+        $('shipping').textContent = shipping ? fmt(shipping) : 'Free';
+        $('total').textContent = fmt(subtotal + shipping);
+      }
+
+      linesEl.addEventListener('click', (e) => {
+        const b = e.target.closest('[data-act]');
+        if (!b) return;
+        const i = +b.closest('.line').dataset.i, line = cart[i], act = b.dataset.act;
+        if (act === 'inc') line.qty = Math.min(MAX_QTY, line.qty + 1);
+        if (act === 'dec') line.qty = Math.max(1, line.qty - 1);
+        if (act === 'rm') cart.splice(i, 1);
+        save(); render(false);
+        // Keep keyboard focus in place after the list re-renders.
+        const again = act !== 'rm' && linesEl.querySelector(`.line[data-i="${i}"] [data-act="${act}"]`);
+        if (again && !again.disabled) again.focus();
+        else closeBtn.focus();
+      });
+
+      /* ---------- Drawer ---------- */
+      let lastFocus = null;
+      const isOpen = () => document.body.classList.contains('cart-open');
+
+      function openCart() {
+        if (isOpen()) return;
+        lastFocus = document.activeElement;
+        document.dispatchEvent(new Event('cart:open'));
+        hideToast();
+        document.body.classList.add('cart-open');
+        closeBtn.focus({ preventScroll: true });
+      }
+      function closeCart() {
+        if (!isOpen()) return;
+        document.body.classList.remove('cart-open');
+        if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+      }
+
+      document.addEventListener('click', (e) => {
+        if (e.target.closest('[data-open-cart]')) openCart();
+        else if (e.target.closest('[data-close-cart]')) closeCart();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (!isOpen()) return;
+        if (e.key === 'Escape') { closeCart(); return; }
+        if (e.key !== 'Tab') return;
+        const f = [...drawer.querySelectorAll('button:not([disabled]), a[href]')].filter((el) => el.offsetParent !== null);
+        if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+
+      $('checkout').addEventListener('click', () => toast('This is a demo store, so checkout isn’t connected yet.'));
+
+      /* ---------- Toast ---------- */
+      const toastEl = $('toast');
+      let toastTimer;
+      function toast(msg, action) {
+        toastEl.replaceChildren();
+        const s = document.createElement('span');
+        s.textContent = msg;
+        toastEl.append(s);
+        if (action) {
+          const b = document.createElement('button');
+          b.type = 'button'; b.textContent = action;
+          b.addEventListener('click', openCart);
+          toastEl.append(b);
+        }
+        toastEl.classList.toggle('solo', !action);
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(hideToast, 3200);
+      }
+      function hideToast() { toastEl.classList.remove('show'); }
+
+      render(false);
+    })();
+  </script>
+</body>
+</html>
